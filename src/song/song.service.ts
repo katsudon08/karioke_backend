@@ -14,8 +14,12 @@ export class SongService {
         })
     }
 
-    async songs(): Promise<Song[]> {
-        return this.prisma.song.findMany()
+    async songs(
+        where?: Prisma.SongWhereInput
+    ): Promise<Song[]> {
+        return this.prisma.song.findMany({
+            where
+        })
     }
 
     async createSong(data: Prisma.SongCreateInput): Promise<Song> {
@@ -39,5 +43,9 @@ export class SongService {
         return this.prisma.song.delete({
             where,
         })
+    }
+
+    async deleteSongs() {
+        return this.prisma.song.deleteMany()
     }
 }
