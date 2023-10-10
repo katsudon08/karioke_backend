@@ -42,12 +42,12 @@ export class SongController {
         )
 
         const tags: Tag[] = await this.tagService.tags()
-        console.log(tags)
-        const newTags: Tag[] = [...tags].filter(tag => tag.name in params.tags)
-        console.log(newTags)
+        console.log("tags", tags)
+        const newTags: Tag[] = [...tags].filter(tag => params.tags.includes(tag.name))
+        console.log("newtags", newTags)
         const tagIds: number[] = [...newTags].map(tag => tag.id)
 
-        console.log(tagIds)
+        console.log("tagids", tagIds)
 
         const song: Song = await this.songService.createSong({
             title: params.title,
@@ -68,8 +68,14 @@ export class SongController {
     }
 
     @Post("tag")
-    async createTag() {
-        
+    async createTag(@Body() param: {
+        name: string
+    }) {
+        console.log(param.name)
+
+        return this.tagService.createTag({
+            name: param.name
+        })
     }
 
 
