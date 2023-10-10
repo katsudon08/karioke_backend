@@ -37,16 +37,13 @@ export class SongController {
         memo: string,
         tags: string[]
     }): Promise<string> {
-        console.log(
-            params
-        )
+        console.log(params)
 
         const tags: Tag[] = await this.tagService.tags()
         console.log("tags", tags)
         const newTags: Tag[] = [...tags].filter(tag => params.tags.includes(tag.name))
         console.log("newtags", newTags)
         const tagIds: number[] = [...newTags].map(tag => tag.id)
-
         console.log("tagids", tagIds)
 
         const song: Song = await this.songService.createSong({
@@ -78,6 +75,38 @@ export class SongController {
         })
     }
 
+    // TODO: タグと曲情報の編集
+    @Put()
+    async updateSong(@Body() params: {
+        id: number,
+        data: {
+            title: string,
+            artist: string,
+            rank: number,
+            key: number,
+            memo: string
+        },
+        tags: string[]
+    }) {
+
+    }
+
+    @Put("tag")
+    async updateTag(@Body() params: {
+        id: number,
+        data: {
+            name: string
+        }
+    }) {
+        console.log(params)
+
+        return this.tagService.updateTag({
+            where: {
+                id: params.id
+            },
+            data: params.data
+        })
+    }
 
     @Delete()
     async deleteAll(): Promise<string> {
