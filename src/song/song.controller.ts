@@ -18,6 +18,7 @@ export class SongController {
         private readonly tagMapService: TagMapService
     ) { }
 
+    // * テスト用
     @Get()
     async getSongs(): Promise<GetResult> {
         const result = {
@@ -26,6 +27,27 @@ export class SongController {
             tagMaps: await this.tagMapService.tagMaps()
         }
         return result
+    }
+
+    // ! テスト未実装
+    @Get("id")
+    async getSongIds(): Promise<number[]> {
+        const ids: number[] = [...await this.songService.songs()].map(song => song.id)
+        return ids
+    }
+
+    // ! テスト未実装
+    @Get("tagId")
+    async getTagIds(): Promise<number[]> {
+        const ids: number[] = [...await this.tagService.tags()].map(tag => tag.id)
+        return ids
+    }
+
+    // ! テスト未実装
+    @Get("tagmapId")
+    async getTagMapIds(): Promise<number[]> {
+        const ids: number[] = [...await this.tagMapService.tagMaps()].map(tag => tag.id)
+        return ids
     }
 
     @Post()
@@ -75,6 +97,7 @@ export class SongController {
         })
     }
 
+    // ! テスト未実装
     // TODO: タグと曲情報の編集
     @Put()
     async updateSong(@Body() params: {
@@ -86,11 +109,28 @@ export class SongController {
             key: number,
             memo: string
         },
-        tags: string[]
+        tags: Tag[]
     }) {
+        for await (const tag of params.tags) {
+            await this.tagService.updateTag({
+                where: {
+                    id: tag.id
+                },
+                data: {
+                    name: tag.name
+                }
+            })
+        }
 
+        return this.songService.updateSong({
+            where: {
+                id: params.id
+            },
+            data: params.data
+        })
     }
 
+    // テスト完了
     @Put("tag")
     async updateTag(@Body() params: {
         id: number,
@@ -108,6 +148,30 @@ export class SongController {
         })
     }
 
+    // テスト完了
+    @Delete()
+    async deleteSong(@Body() param: {
+        id: number,
+    }): Promise<Song> {
+        console.log(param)
+
+        return this.songService.deleteSong({
+            id: param.id
+        })
+    }
+
+    @Delete("tag")
+    async deleteTag(@Body() param: {
+        id: number
+    }): Promise<Tag> {
+        console.log(param)
+
+        return this.tagService.deleteTag({
+            id: param.id
+        })
+    }
+
+    // * テスト用
     @Delete()
     async deleteAll(): Promise<string> {
         await this.songService.deleteSongs()
