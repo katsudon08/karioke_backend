@@ -18,13 +18,13 @@ export class SongController {
         private readonly tagMapService: TagMapService
     ) { }
 
-    // * テスト用
+    // * テスト用(idによる昇順に変更)
     @Get()
     async getSongs(): Promise<GetResult> {
         const result = {
-            songs: await this.songService.songs(),
-            tags: await this.tagService.tags(),
-            tagMaps: await this.tagMapService.tagMaps()
+            songs: (await this.songService.songs()).sort((a, b) => a.id - b.id),
+            tags: (await this.tagService.tags()).sort((a, b) => a.id - b.id),
+            tagMaps: (await this.tagMapService.tagMaps()).sort((a, b) => a.id - b.id)
         }
         return result
     }
@@ -102,7 +102,7 @@ export class SongController {
         })
     }
 
-    // ! テスト未実装
+    // テスト完了
     // TODO: タグと曲情報の編集
     @Put()
     async updateSong(@Body() params: {
@@ -116,6 +116,8 @@ export class SongController {
         },
         tags: Tag[]
     }) {
+        console.log(params)
+
         for await (const tag of params.tags) {
             await this.tagService.updateTag({
                 where: {
