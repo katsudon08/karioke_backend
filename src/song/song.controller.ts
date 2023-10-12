@@ -29,27 +29,31 @@ export class SongController {
         return result
     }
 
-    // ! テスト未実装
+    // テスト完了
     @Get("id")
     async getSongIds(): Promise<number[]> {
         const ids: number[] = [...await this.songService.songs()].map(song => song.id)
-        return ids
+        const sortedIds: number[] = [...ids].sort()
+        return sortedIds
     }
 
-    // ! テスト未実装
+    // テスト完了
     @Get("tagId")
     async getTagIds(): Promise<number[]> {
         const ids: number[] = [...await this.tagService.tags()].map(tag => tag.id)
-        return ids
+        const sortedIds: number[] = [...ids].sort()
+        return sortedIds
     }
 
-    // ! テスト未実装
+    // テスト完了
     @Get("tagmapId")
     async getTagMapIds(): Promise<number[]> {
         const ids: number[] = [...await this.tagMapService.tagMaps()].map(tag => tag.id)
-        return ids
+        const sortedIds: number[] = [...ids].sort()
+        return sortedIds
     }
 
+    // テスト完了
     @Post()
     async createSong(@Body() params: {
         title: string,
@@ -86,6 +90,7 @@ export class SongController {
         return "succeeded"
     }
 
+    // テスト完了
     @Post("tag")
     async createTag(@Body() param: {
         name: string
