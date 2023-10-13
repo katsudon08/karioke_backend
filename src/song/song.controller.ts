@@ -4,7 +4,7 @@ import { TagService } from './tag.service';
 import { TagMapService } from './tagmap.service';
 import { Song, Tag, TagMap } from '@prisma/client';
 import { AES } from 'crypto-ts';
-import { encryptSong, encryptTag } from './crypt';
+import { decryptSong, decryptTag, encryptSong, encryptTag } from './crypt';
 
 interface GetResult {
     songs: Song[]
@@ -55,16 +55,36 @@ export class SongController {
         }
     }
 
-    // テスト完了
+    // 復号完了
+    // ! テスト未完
     @Get()
-    async getSongs(): Promise<Song[]> {
-        return (await this.songService.songs()).sort((a, b) => a.id - b.id)
+    async getSongs(): Promise<{
+        id: number,
+        title: string,
+        artist: string,
+        rank: number,
+        key: number,
+        memo: string,
+    }[]> {
+        const encryptedSongs = (await this.songService.songs()).sort((a, b) => a.id - b.id)
+
+        const decryptedSongs = [...encryptedSongs].map(song => decryptSong(song))
+
+        return decryptedSongs
     }
 
-    // テスト完了
+    // 復号完了
+    // ! テスト未完
     @Get("tag")
-    async getTags(): Promise<Tag[]> {
-        return (await this.tagService.tags()).sort((a, b) => a.id - b.id)
+    async getTags(): Promise<{
+        id: number,
+        name: string
+    }[]> {
+        const ecncryptedTags = (await this.tagService.tags()).sort((a, b) => a.id - b.id)
+
+        const decryptedTags = [...ecncryptedTags].map(tag => decryptTag(tag))
+
+        return decryptedTags
     }
 
     // テスト完了
