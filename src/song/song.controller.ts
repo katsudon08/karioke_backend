@@ -19,14 +19,24 @@ export class SongController {
     ) { }
 
     // * テスト用(idによる昇順に変更)
-    @Get()
-    async getSongs(): Promise<GetResult> {
+    @Get("test")
+    async getAll(): Promise<GetResult> {
         const result = {
             songs: (await this.songService.songs()).sort((a, b) => a.id - b.id),
             tags: (await this.tagService.tags()).sort((a, b) => a.id - b.id),
             tagMaps: (await this.tagMapService.tagMaps()).sort((a, b) => a.id - b.id)
         }
         return result
+    }
+
+    @Get()
+    async getSongs(): Promise<Song[]> {
+        return (await this.songService.songs()).sort((a, b) => a.id - b.id)
+    }
+
+    @Get("tag")
+    async getTags(): Promise<Tag[]> {
+        return (await this.tagService.tags()).sort((a, b) => a.id - b.id)
     }
 
     // テスト完了
