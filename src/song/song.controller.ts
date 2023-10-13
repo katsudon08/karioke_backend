@@ -3,6 +3,7 @@ import { SongService } from './song.service';
 import { TagService } from './tag.service';
 import { TagMapService } from './tagmap.service';
 import { Song, Tag, TagMap } from '@prisma/client';
+import { AES } from 'crypto-ts';
 
 interface GetResult {
     songs: Song[]
@@ -29,11 +30,37 @@ export class SongController {
         return result
     }
 
+    // テスト用
+    @Get("crypto")
+    async crypto() {
+        const getSong = await this.songService.song({
+            id: 8
+        })
+
+        const encryptedTitle = AES.encrypt(getSong.title, "title").toString()
+        const encryptedArtist = AES.encrypt(getSong.artist, "artist").toString()
+        const encryptedRank = AES.encrypt(String(getSong.rank), "rank").toString()
+        const encryptedKey = AES.encrypt(String(getSong.key), "key").toString()
+        const encryptedMemo = AES.encrypt(getSong.memo, "memo").toString()
+
+        console.log(encryptedTitle)
+
+        return {
+            "title": encryptedTitle,
+            "artist": encryptedArtist,
+            "rank": encryptedRank,
+            "key": encryptedKey,
+            "memo": encryptedMemo
+        }
+    }
+
+    // テスト完了
     @Get()
     async getSongs(): Promise<Song[]> {
         return (await this.songService.songs()).sort((a, b) => a.id - b.id)
     }
 
+    // テスト完了
     @Get("tag")
     async getTags(): Promise<Tag[]> {
         return (await this.tagService.tags()).sort((a, b) => a.id - b.id)
@@ -124,7 +151,10 @@ export class SongController {
             key: number,
             memo: string
         },
-        tags: Tag[]
+        tags: {
+            id: number,
+            name: string
+        }[]
     }) {
         console.log(params)
 
