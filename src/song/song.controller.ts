@@ -4,6 +4,7 @@ import { TagService } from './tag.service';
 import { TagMapService } from './tagmap.service';
 import { Song, Tag, TagMap } from '@prisma/client';
 import { AES } from 'crypto-ts';
+import { encryptSong, encryptTag } from './crypt';
 
 interface GetResult {
     songs: Song[]
@@ -30,7 +31,7 @@ export class SongController {
         return result
     }
 
-    // テスト用
+    // * テスト用
     @Get("crypto")
     async crypto() {
         const getSong = await this.songService.song({
@@ -90,7 +91,8 @@ export class SongController {
         return sortedIds
     }
 
-    // テスト完了
+    // 暗号化完了
+    // ! テスト未完
     @Post()
     async createSong(@Body() params: {
         title: string,
@@ -109,13 +111,9 @@ export class SongController {
         const tagIds: number[] = [...newTags].map(tag => tag.id)
         console.log("tagids", tagIds)
 
-        const song: Song = await this.songService.createSong({
-            title: params.title,
-            artist: params.artist,
-            rank: params.rank,
-            key: params.key,
-            memo: params.memo
-        })
+        const encryptedSong = encryptSong(params)
+
+        const song: Song = await this.songService.createSong(encryptedSong)
 
         for await (const id of tagIds) {
             await this.tagMapService.createTagMap({
@@ -127,20 +125,21 @@ export class SongController {
         return "succeeded"
     }
 
-    // テスト完了
+    // 暗号化完了
+    // ! テスト未完
     @Post("tag")
     async createTag(@Body() param: {
         name: string
     }) {
         console.log(param.name)
 
-        return this.tagService.createTag({
-            name: param.name
-        })
+        const encryptedName = encryptTag(param)
+
+        return this.tagService.createTag(encryptedName)
     }
 
-    // テスト完了
-    // TODO: タグと曲情報の編集
+    // 暗号化完了
+    // ! テスト未完
     @Put()
     async updateSong(@Body() params: {
         id: number,
@@ -158,6 +157,8 @@ export class SongController {
     }) {
         console.log(params)
 
+        const encryptedSong = encryptSong(params.data)
+
         for await (const tag of params.tags) {
             await this.tagService.updateTag({
                 where: {
@@ -173,11 +174,12 @@ export class SongController {
             where: {
                 id: params.id
             },
-            data: params.data
+            data: encryptedSong
         })
     }
 
-    // テスト完了
+    // 暗号化完了
+    // ! テスト未完
     @Put("tag")
     async updateTag(@Body() params: {
         id: number,
@@ -187,11 +189,13 @@ export class SongController {
     }) {
         console.log(params)
 
+        const encryptedName = encryptTag(params.data)
+
         return this.tagService.updateTag({
             where: {
                 id: params.id
             },
-            data: params.data
+            data: encryptedName
         })
     }
 

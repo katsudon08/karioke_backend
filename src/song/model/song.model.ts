@@ -4,7 +4,7 @@ export class Song implements Prisma.SongCreateInput {
     id: number;
     title: string;
     artist: string;
-    rank: number;
-    key: number;
+    rank: string;
+    key: string;
     memo?: string;
 }
