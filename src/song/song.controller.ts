@@ -165,6 +165,10 @@ export class SongController {
 
         const encryptedSong = encryptSong(params.data)
 
+        const tagmaps: TagMap[] = await this.tagMapService.tagMaps()
+        const newTagMaps: TagMap[] = [...tagmaps].filter(tagmap => tagmap.songId === params.data.id)
+        const tagIds: number[] = [...newTagMaps].map(tagmap => tagmap.tagId)
+
         for await (const tag of params.tags) {
             await this.tagService.updateTag({
                 where: {
@@ -174,13 +178,6 @@ export class SongController {
                     name: tag.name
                 }
             })
-        }
-
-        const tagmaps: TagMap[] = await this.tagMapService.tagMaps()
-        const newTagMaps: TagMap[] = [...tagmaps].filter(tagmap => tagmap.songId === params.data.id)
-        const tagIds: number[] = [...newTagMaps].map(tagmap => tagmap.tagId)
-
-        for (const tag of params.tags) {
             if (tagIds.includes(tag.id)) {
                 continue
             }
