@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { SongService } from './song.service';
 import { TagService } from './tag.service';
 import { TagMapService } from './tagmap.service';
-import { Song, Tag } from '@prisma/client';
+import { Song, Tag, TagMap } from '@prisma/client';
 import { AES } from 'crypto-ts';
 import { decryptSong, decryptTag, encryptSong, encryptTag } from './crypt';
 import { CreateSong, DecryptedSong, DecryptedSongOnId, DecryptedTag, DecryptedTagOnId, GetDecryptedResult, GetResult } from './types';
@@ -69,7 +69,7 @@ export class SongController {
     }
 
     // 復号完了
-    // ! テスト未完
+    // テスト完了
     @Get()
     async getSongs(): Promise<DecryptedSong[]> {
         const encryptedSongs = (await this.songService.songs()).sort((a, b) => a.id - b.id)
@@ -80,12 +80,12 @@ export class SongController {
     }
 
     // 復号完了
-    // ! テスト未完
+    // テスト完了
     @Get("tag")
     async getTags(): Promise<DecryptedTag[]> {
-        const ecncryptedTags = (await this.tagService.tags()).sort((a, b) => a.id - b.id)
+        const encryptedTags = (await this.tagService.tags()).sort((a, b) => a.id - b.id)
 
-        const decryptedTags = [...ecncryptedTags].map(tag => decryptTag(tag))
+        const decryptedTags = [...encryptedTags].map(tag => decryptTag(tag))
 
         return decryptedTags
     }
@@ -115,14 +115,14 @@ export class SongController {
     }
 
     // 暗号化完了
-    // ! テスト未完
+    //  テスト完了
     @Post()
     async createSong(@Body() params: CreateSong): Promise<string> {
         console.log(params)
 
-        const tags: Tag[] = await this.tagService.tags()
+        const tags: DecryptedTagOnId[] = [...await this.tagService.tags()].map(tag => decryptTag(tag))
         console.log("tags", tags)
-        const newTags: Tag[] = [...tags].filter(tag => params.tags.includes(tag.name))
+        const newTags: DecryptedTagOnId[] = [...tags].filter(tag => params.tags.includes(tag.name))
         console.log("newtags", newTags)
         const tagIds: number[] = [...newTags].map(tag => tag.id)
         console.log("tagids", tagIds)
@@ -142,7 +142,7 @@ export class SongController {
     }
 
     // 暗号化完了
-    // ! テスト未完
+    // テスト完了
     @Post("tag")
     async createTag(@Body() param: {
         name: string
@@ -155,7 +155,7 @@ export class SongController {
     }
 
     // 暗号化完了
-    // ! テスト未完
+    // テスト完了
     @Put()
     async updateSong(@Body() params: {
         data: DecryptedSongOnId,
@@ -176,6 +176,19 @@ export class SongController {
             })
         }
 
+        const tagmaps: TagMap[] = await this.tagMapService.tagMaps()
+        const newTagMaps: TagMap[] = [...tagmaps].filter(tagmap => tagmap.songId === params.data.id)
+        const tagIds: number[] = [...newTagMaps].map(tagmap => tagmap.tagId)
+
+        for (const tag of params.tags) {
+            if (tagIds.includes(tag.id)) {
+                continue
+            }
+            await this.deleteTag({
+                id: tag.id
+            })
+        }
+
         return this.songService.updateSong({
             where: {
                 id: params.data.id
@@ -185,7 +198,7 @@ export class SongController {
     }
 
     // 暗号化完了
-    // ! テスト未完
+    // テスト完了
     @Put("tag")
     async updateTag(@Body() params: {
         data: DecryptedTagOnId
@@ -214,6 +227,7 @@ export class SongController {
         })
     }
 
+    // テスト完了
     @Delete("tag")
     async deleteTag(@Body() param: {
         id: number
