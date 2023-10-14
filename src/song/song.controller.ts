@@ -226,7 +226,7 @@ export class SongController {
     }
 
     // * テスト用
-    @Delete()
+    @Delete("test")
     async deleteAll(): Promise<string> {
         await this.songService.deleteSongs()
         await this.tagService.deleteTags()
