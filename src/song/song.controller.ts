@@ -70,8 +70,9 @@ export class SongController {
 
     // 復号完了
     // テスト完了
+    // 取得成功
     @Get()
-    async getSongs(): Promise<DecryptedSong[]> {
+    async getSongs(): Promise<DecryptedSongOnId[]> {
         const encryptedSongs = (await this.songService.songs()).sort((a, b) => a.id - b.id)
 
         const decryptedSongs = [...encryptedSongs].map(song => decryptSong(song))
@@ -82,7 +83,17 @@ export class SongController {
     // 復号完了
     // テスト完了
     @Get("tag")
-    async getTags(): Promise<DecryptedTag[]> {
+    async getTags(): Promise<string[]> {
+        const encryptedTags = (await this.tagService.tags()).sort((a, b) => a.id - b.id)
+
+        const decryptedTags = [...encryptedTags].map(tag => decryptTag(tag))
+        const tags: string[] = [...decryptedTags].map(tag => tag.name)
+
+        return tags
+    }
+
+    @Get("tagOnId")
+    async getTagOnIds(): Promise<Tag[]> {
         const encryptedTags = (await this.tagService.tags()).sort((a, b) => a.id - b.id)
 
         const decryptedTags = [...encryptedTags].map(tag => decryptTag(tag))
@@ -114,6 +125,13 @@ export class SongController {
         return sortedIds
     }
 
+    @Get("tagmap")
+    async getTagMap(): Promise<TagMap[]> {
+        const tagmaps: TagMap[] = (await this.tagMapService.tagMaps()).sort((a, b) => a.id - b.id)
+
+        return tagmaps
+    }
+
     // 暗号化完了
     //  テスト完了
     @Post()
@@ -138,15 +156,17 @@ export class SongController {
             })
         }
 
-        return "succeeded"
+        return "succeed"
     }
 
     // 暗号化完了
     // テスト完了
+    // 送信成功
     @Post("tag")
     async createTag(@Body() param: {
         name: string
     }) {
+        console.log(param)
         console.log(param.name)
 
         const encryptedName = encryptTag(param)
@@ -159,7 +179,7 @@ export class SongController {
     @Put()
     async updateSong(@Body() params: {
         data: DecryptedSongOnId,
-        tags: DecryptedTagOnId[]
+        tagIds: number[]
     }) {
         console.log(params)
 
@@ -167,24 +187,21 @@ export class SongController {
 
         const tagmaps: TagMap[] = await this.tagMapService.tagMaps()
         const newTagMaps: TagMap[] = [...tagmaps].filter(tagmap => tagmap.songId === params.data.id)
-        const tagIds: number[] = [...newTagMaps].map(tagmap => tagmap.tagId)
 
-        for await (const tag of params.tags) {
-            await this.tagService.updateTag({
-                where: {
-                    id: tag.id
-                },
-                data: {
-                    name: tag.name
-                }
+        // 今までのtagmapを削除
+        newTagMaps.map(tagmap => {
+            this.tagMapService.deleteTagMap({
+                id: tagmap.id
             })
-            if (tagIds.includes(tag.id)) {
-                continue
-            }
-            await this.deleteTag({
-                id: tag.id
+        })
+
+        // tagmapの書き換え
+        params.tagIds.map(id => {
+            this.tagMapService.createTagMap({
+                songId: params.data.id,
+                tagId: id
             })
-        }
+        })
 
         return this.songService.updateSong({
             where: {
