@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body } from '@nestjs/common';
 import { SongService } from './song.service';
 import { TagService } from './tag.service';
 import { TagMapService } from './tagmap.service';
@@ -251,6 +251,51 @@ export class SongController {
         return this.tagService.deleteTag({
             id: param.id
         })
+    }
+
+    @Delete("home")
+    async deleteSongs(): Promise<string> {
+        await this.songService.deleteSongs()
+        await this.tagMapService.deleteTagMaps()
+        console.log("succeeded")
+
+        return "succeeded"
+    }
+
+    @Delete("slug")
+    async deleteTagSongs(@Body() param: {
+        slug: string
+    }): Promise<string> {
+        console.log("slug: ", param.slug)
+
+        const tagOnIds = await this.tagService.tags()
+        const decryptedTags = [...tagOnIds].map(tag => decryptTag(tag))
+        console.log("tagOnIds", decryptedTags)
+        const filterTags = [...decryptedTags].filter(tag => tag.name === param.slug)
+        console.log(filterTags)
+
+        if (filterTags.length === 0) {
+            return "not delete 1"
+        }
+        const filterTagId: number = [...filterTags].map(tag => tag.id)[0]
+
+        const tagmaps = await this.tagMapService.tagMaps()
+        const filterTagmaps = [...tagmaps].filter(tag => tag.tagId === filterTagId)
+        console.log(filterTagmaps)
+        if (filterTagmaps.length === 0) {
+            return "not delete 2"
+        }
+        filterTagmaps.map(async tagmap => {
+            await this.tagMapService.deleteTagMap({
+                id: tagmap.id
+            })
+        })
+
+        await this.tagService.deleteTag({
+            id: filterTagId
+        })
+
+        return "succeeded"
     }
 
     // * テスト用
