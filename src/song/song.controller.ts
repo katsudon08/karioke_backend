@@ -236,6 +236,16 @@ export class SongController {
     }): Promise<Song> {
         console.log(param)
 
+        const tagmaps = await this.tagMapService.tagMaps()
+        const filterTagmaps = [...tagmaps].filter(tagmap => tagmap.songId === param.id)
+        if(filterTagmaps.length !== 0) {
+            filterTagmaps.map(async tagmap => {
+                await this.tagMapService.deleteTagMap({
+                    id: tagmap.id
+                })
+            })
+        }
+
         return this.songService.deleteSong({
             id: param.id
         })
