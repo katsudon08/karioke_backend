@@ -6,6 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "postinstall": "prisma generate",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -25,7 +26,8 @@
     "crypto-ts": "^1.0.2",
     "prisma": "^5.3.1",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "supabase": "^1.106.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
