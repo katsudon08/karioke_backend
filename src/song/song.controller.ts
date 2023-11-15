@@ -292,14 +292,13 @@ export class SongController {
         const tagmaps = await this.tagMapService.tagMaps()
         const filterTagmaps = [...tagmaps].filter(tag => tag.tagId === filterTagId)
         console.log(filterTagmaps)
-        if (filterTagmaps.length === 0) {
-            return "not delete 2"
-        }
-        filterTagmaps.map(async tagmap => {
-            await this.tagMapService.deleteTagMap({
-                id: tagmap.id
+        if (filterTagmaps.length !== 0) {
+            filterTagmaps.map(async tagmap => {
+                await this.tagMapService.deleteTagMap({
+                    id: tagmap.id
+                })
             })
-        })
+        }
 
         await this.tagService.deleteTag({
             id: filterTagId
