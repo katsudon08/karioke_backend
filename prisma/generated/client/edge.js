@@ -165,16 +165,18 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
-        "fromEnvVar": "DEV_URL",
+        "fromEnvVar": "DEPLOY_URL",
         "value": null
       }
     }
   },
-  "inlineSchema": "Ly8gVGhpcyBpcyB5b3VyIFByaXNtYSBzY2hlbWEgZmlsZSwKLy8gbGVhcm4gbW9yZSBhYm91dCBpdCBpbiB0aGUgZG9jczogaHR0cHM6Ly9wcmlzLmx5L2QvcHJpc21hLXNjaGVtYQoKZ2VuZXJhdG9yIGNsaWVudCB7CiAgICBwcm92aWRlciA9ICJwcmlzbWEtY2xpZW50LWpzIgogICAgb3V0cHV0ID0gIi4vZ2VuZXJhdGVkL2NsaWVudCIKfQoKZGF0YXNvdXJjZSBkYiB7CiAgICBwcm92aWRlciA9ICJwb3N0Z3Jlc3FsIgogICAgdXJsICAgICAgPSBlbnYoIkRFVl9VUkwiKQp9Cgptb2RlbCBTb25nIHsKICAgIGlkIEludCBAaWQgQGRlZmF1bHQoYXV0b2luY3JlbWVudCgpKQogICAgdGl0bGUgU3RyaW5nCiAgICBhcnRpc3QgU3RyaW5nCiAgICByYW5rIFN0cmluZwogICAga2V5IFN0cmluZwogICAgbWVtbyBTdHJpbmc/Cn0KCm1vZGVsIFRhZyB7CiAgICBpZCBJbnQgQGlkIEBkZWZhdWx0KGF1dG9pbmNyZW1lbnQoKSkKICAgIG5hbWUgU3RyaW5nCn0KCm1vZGVsIFRhZ01hcCB7CiAgICBpZCBJbnQgQGlkIEBkZWZhdWx0KGF1dG9pbmNyZW1lbnQoKSkKICAgIHNvbmdJZCBJbnQKICAgIHRhZ0lkIEludAp9",
-  "inlineSchemaHash": "06b8a9d277d3388e812a25072399f55efc016ab8532f9c05eb9b51cddc0b8b77"
+  "inlineSchema": "Ly8gVGhpcyBpcyB5b3VyIFByaXNtYSBzY2hlbWEgZmlsZSwKLy8gbGVhcm4gbW9yZSBhYm91dCBpdCBpbiB0aGUgZG9jczogaHR0cHM6Ly9wcmlzLmx5L2QvcHJpc21hLXNjaGVtYQoKZ2VuZXJhdG9yIGNsaWVudCB7CiAgICBwcm92aWRlciA9ICJwcmlzbWEtY2xpZW50LWpzIgogICAgb3V0cHV0ID0gIi4vZ2VuZXJhdGVkL2NsaWVudCIKfQoKZGF0YXNvdXJjZSBkYiB7CiAgICBwcm92aWRlciA9ICJwb3N0Z3Jlc3FsIgogICAgdXJsICAgICAgPSBlbnYoIkRFUExPWV9VUkwiKQp9Cgptb2RlbCBTb25nIHsKICAgIGlkIEludCBAaWQgQGRlZmF1bHQoYXV0b2luY3JlbWVudCgpKQogICAgdGl0bGUgU3RyaW5nCiAgICBhcnRpc3QgU3RyaW5nCiAgICByYW5rIFN0cmluZwogICAga2V5IFN0cmluZwogICAgbWVtbyBTdHJpbmc/Cn0KCm1vZGVsIFRhZyB7CiAgICBpZCBJbnQgQGlkIEBkZWZhdWx0KGF1dG9pbmNyZW1lbnQoKSkKICAgIG5hbWUgU3RyaW5nCn0KCm1vZGVsIFRhZ01hcCB7CiAgICBpZCBJbnQgQGlkIEBkZWZhdWx0KGF1dG9pbmNyZW1lbnQoKSkKICAgIHNvbmdJZCBJbnQKICAgIHRhZ0lkIEludAp9",
+  "inlineSchemaHash": "023f601d3d1efa8d8bba9eabcfa9caa12d897703880b3835b8862d806379ed5a",
+  "noEngine": false
 }
 config.dirname = '/'
 
@@ -184,7 +186,7 @@ defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 
 config.injectableEdgeEnv = () => ({
   parsed: {
-    DEV_URL: typeof globalThis !== 'undefined' && globalThis['DEV_URL'] || typeof process !== 'undefined' && process.env && process.env.DEV_URL || undefined
+    DEPLOY_URL: typeof globalThis !== 'undefined' && globalThis['DEPLOY_URL'] || typeof process !== 'undefined' && process.env && process.env.DEPLOY_URL || undefined
   }
 })
 
