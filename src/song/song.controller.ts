@@ -76,6 +76,7 @@ export class SongController {
         const encryptedSongs = (await this.songService.songs()).sort((a, b) => a.id - b.id)
 
         const decryptedSongs = [...encryptedSongs].map(song => decryptSong(song))
+        console.log(decryptedSongs)
 
         return decryptedSongs
     }
