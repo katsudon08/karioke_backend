@@ -148,6 +148,7 @@ export class SongController {
         const encryptedSong = encryptSong(params)
 
         const song: Song = await this.songService.createSong(encryptedSong)
+        console.log(song)
 
         for await (const id of tagIds) {
             await this.tagMapService.createTagMap({
