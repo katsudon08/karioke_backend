@@ -67,6 +67,7 @@ let SongController = class SongController {
     async getSongs() {
         const encryptedSongs = (await this.songService.songs()).sort((a, b) => a.id - b.id);
         const decryptedSongs = [...encryptedSongs].map(song => (0, crypt_1.decryptSong)(song));
+        console.log(decryptedSongs);
         return decryptedSongs;
     }
     async getTags() {
@@ -109,6 +110,7 @@ let SongController = class SongController {
         console.log("tagids", tagIds);
         const encryptedSong = (0, crypt_1.encryptSong)(params);
         const song = await this.songService.createSong(encryptedSong);
+        console.log(song);
         for await (const id of tagIds) {
             await this.tagMapService.createTagMap({
                 songId: song.id,
